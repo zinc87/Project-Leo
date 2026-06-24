@@ -87,7 +87,8 @@ var SHOW_SECONDS = true;   // set to false to hide the seconds unit
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); }
+        if (e.isIntersecting) { reveal(e.target); }
+        else {e.target.classList.remove('shown'); }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
     reveals.forEach(function (e) { if (!e.classList.contains('shown')) io.observe(e); });
@@ -95,16 +96,16 @@ var SHOW_SECONDS = true;   // set to false to hide the seconds unit
 
   // 3) transition watchdog: if a revealed element's fade hasn't progressed
   //    (transitions disabled/janky in some environments), snap it visible instantly.
-  setTimeout(function () {
-    reveals.forEach(function (e) {
-      if (e.classList.contains('shown') && getComputedStyle(e).opacity !== '1') revealInstant(e);
-    });
-  }, 1300);
+  // setTimeout(function () {
+  //   reveals.forEach(function (e) {
+  //     if (e.classList.contains('shown') && getComputedStyle(e).opacity !== '1') revealInstant(e);
+  //   });
+  // }, 1300);
 
   // 4) final safety net: nothing stays hidden, ever.
-  setTimeout(function () {
-    reveals.forEach(function (e) {
-      if (getComputedStyle(e).opacity !== '1') revealInstant(e);
-    });
-  }, 5000);
+  // setTimeout(function () {
+  //   reveals.forEach(function (e) {
+  //     if (getComputedStyle(e).opacity !== '1') revealInstant(e);
+  //   });
+  // }, 5000);
 })();
