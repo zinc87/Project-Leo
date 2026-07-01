@@ -93,3 +93,28 @@ body{
   background:linear-gradient(rgba(58,51,48,.45),rgba(58,51,48,0));
   animation:ot-cue 2.4s ease-in-out infinite;
 }
+
+#splash {
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px;
+  cursor:pointer;
+  opacity:0;
+  transition: opacity 2s ease;
+}
+
+#splash.visible {
+  opacity:1;
+}
+
+#splash.fade-out {
+  opacity:0;
+  pointer-events:none;
+}

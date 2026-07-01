@@ -71,32 +71,60 @@ var SHOW_SECONDS = true;   // set to false to hide the seconds unit
   tick();
   setInterval(tick, 1000);
 
-  // ---- scroll reveal (stays revealed once shown) ----
-  var reveals = document.querySelectorAll('[data-reveal]');
-  function reveal(e) { e.classList.add('shown'); }
-  function revealInstant(e) { e.classList.add('shown', 'instant'); }
-  function inView(e) {
-    var r = e.getBoundingClientRect();
-    return r.top < (window.innerHeight || document.documentElement.clientHeight) && r.bottom > 0;
-  }
-
-  // 1) reveal anything already on screen at load (so above-the-fold never stays blank)
-  requestAnimationFrame(function () {
-  requestAnimationFrame(function () {
+  function startReveal() {
+    var reveals = document.querySelectorAll('[data-reveal]');
+    function reveal(e) { e.classList.add('shown'); }
+    function inView(e) 
+    {
+      var r = e.getBoundingClientRect();
+      return r.top < (window.innerHeight || document.documentElement.clientHeight) && r.bottom > 0;
+    }
+    
     reveals.forEach(function (e) { if (inView(e)) reveal(e); });
-    });
-  });
-
-  // 2) observe the rest as they scroll in
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { reveal(e.target); }
-        else {e.target.classList.remove('shown'); }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
-    reveals.forEach(function (e) { if (!e.classList.contains('shown')) io.observe(e); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { reveal(e.target); }
+          else { e.target.classList.remove('shown'); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+      reveals.forEach(function (e) { io.observe(e); });
+    }
   }
+
+  var splash = document.getElementById('splash');
+  if (splash) {
+    requestAnimationFrame(function() {
+      splash.classList.add('visible');
+    });
+    splash.addEventListener('click', function () {
+      splash.classList.add('fade-out');
+      setTimeout(function () {
+        splash.remove();
+        startReveal();
+      }, 2000);
+    });
+  } else {
+    startReveal();
+  }
+
+  // // 1) reveal anything already on screen at load (so above-the-fold never stays blank)
+  // requestAnimationFrame(function () {
+  // requestAnimationFrame(function () {
+  //   reveals.forEach(function (e) { if (inView(e)) reveal(e); });
+  //   });
+  // });
+
+  // // 2) observe the rest as they scroll in
+  // if ('IntersectionObserver' in window) {
+  //   var io = new IntersectionObserver(function (entries) {
+  //     entries.forEach(function (e) {
+  //       if (e.isIntersecting) { reveal(e.target); }
+  //       else {e.target.classList.remove('shown'); }
+  //     });
+  //   }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+  //   reveals.forEach(function (e) { if (!e.classList.contains('shown')) io.observe(e); });
+  // }
 
   // 3) transition watchdog: if a revealed element's fade hasn't progressed
   //    (transitions disabled/janky in some environments), snap it visible instantly.
